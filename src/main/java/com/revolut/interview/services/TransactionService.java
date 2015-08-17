@@ -7,7 +7,8 @@ import java.util.Currency;
 
 public interface TransactionService {
 
-    Transaction createTransaction(long srcAccountId, long dstAccountId, BigDecimal amount, Currency currency);
+    Transaction createTransaction(long srcAccountId, long dstAccountId, BigDecimal amount, Currency currency)
+            throws TransactionServiceException;
 
     boolean executeTransaction(long transactionId);
 

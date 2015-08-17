@@ -14,9 +14,18 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <testng.version>6.1.1</testng.version>
     <mockito.version>1.10.8</mockito.version>
+    <guava.version>18.0</guava.version>
   </properties>
 
   <dependencies>
+    <!-- Guava dependency -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+
+    <!-- TEST DEPENDENCIES -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>

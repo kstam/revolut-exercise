@@ -1,5 +1,7 @@
 package com.revolut.interview.model;
 
+import com.google.common.base.MoreObjects;
+
 import java.math.BigDecimal;
 import java.util.Currency;
 
@@ -48,6 +50,18 @@ public class Transaction {
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("src", src)
+                .add("dst", dst)
+                .add("amount", amount)
+                .add("currency", currency)
+                .add("status", status)
+                .toString();
     }
 
     public enum TransactionStatus {

@@ -4,5 +4,5 @@ import com.revolut.interview.model.Account;
 
 public interface AccountRepo {
 
-    Account getAccountById(long l);
+    Account getAccountById(long l) throws AccountNotFoundAccessException;
 }
