@@ -31,7 +31,7 @@ public class TheTransactionServiceTest {
     TheTransactionService transactionService;
 
     @BeforeMethod
-    public void setup() throws AccountNotFoundAccessException {
+    public void setup() throws DataAccessException {
         initMocks(this);
         when(accountRepo.getAccountById(account1.getId())).thenReturn(account1);
         when(accountRepo.getAccountById(account2.getId())).thenReturn(account2);
@@ -58,7 +58,7 @@ public class TheTransactionServiceTest {
             throws TransactionServiceException, DataAccessException {
         when(transactionRepo.insert(any(Transaction.class))).then(invocation -> {
             Transaction txn = (Transaction) invocation.getArguments()[0];
-            return new Transaction(1L, txn.getSource(), txn.getDestination(), txn.getAmount(), txn.getCurrency(),
+            return new Transaction(1L, txn.getSourceId(), txn.getDestinationId(), txn.getAmount(), txn.getCurrency(),
                     Transaction.TransactionStatus.PENDING);
         });
 
@@ -66,35 +66,35 @@ public class TheTransactionServiceTest {
                 .createTransaction(account1.getId(), account2.getId(), AMOUNT1, EUR);
 
         assertEquals(transaction.getId(), new Long(1L));
-        assertEquals(transaction.getSource(), account1);
-        assertEquals(transaction.getDestination(), account2);
+        assertEquals(transaction.getSourceId(), account1.getId());
+        assertEquals(transaction.getDestinationId(), account2.getId());
         assertEquals(transaction.getCurrency(), EUR);
         assertEquals(transaction.getStatus(), Transaction.TransactionStatus.PENDING);
         assertTrue(transaction.getAmount().equals(AMOUNT1));
     }
 
     @Test
-    public void testCreateTransactionThrowsExceptionIfAccountDoesNotExist() throws AccountNotFoundAccessException {
-        when(accountRepo.getAccountById(3L)).thenThrow(new AccountNotFoundAccessException(3L));
+    public void testCreateTransactionThrowsExceptionIfAccountDoesNotExist() throws DataAccessException {
+        when(accountRepo.getAccountById(3L)).thenThrow(new AccountNotFoundException(3L));
         try {
             transactionService.createTransaction(account1.getId(), 3L, new BigDecimal(5), EUR);
             fail("Exception was not thrown");
         } catch (TransactionServiceException tse) {
-            assertTrue(tse.getCause() instanceof AccountNotFoundAccessException);
+            assertTrue(tse.getCause() instanceof AccountNotFoundException);
         }
     }
 
     @Test
     public void testCreateTransactionThrowsExceptionIfRepoFailedToCreateTransaction() throws DataAccessException {
         when(transactionRepo.insert(any(Transaction.class))).then(invocation -> {
-            throw new TransactionInsertAccessException((Transaction) invocation.getArguments()[0]);
+            throw new TransactionInsertException((Transaction) invocation.getArguments()[0]);
         });
 
         try {
             transactionService.createTransaction(account1.getId(), 3L, new BigDecimal(5), EUR);
             fail("Exception was not thrown");
         } catch (TransactionServiceException tse) {
-            assertTrue(tse.getCause() instanceof TransactionInsertAccessException);
+            assertTrue(tse.getCause() instanceof TransactionInsertException);
         }
     }
 }

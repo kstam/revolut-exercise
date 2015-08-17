@@ -1,8 +1,9 @@
 package com.revolut.interview.services;
 
-import com.revolut.interview.model.Account;
 import com.revolut.interview.model.Transaction;
-import com.revolut.interview.repos.*;
+import com.revolut.interview.repos.AccountRepo;
+import com.revolut.interview.repos.DataAccessException;
+import com.revolut.interview.repos.TransactionRepo;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -24,9 +25,9 @@ public class TheTransactionService implements TransactionService {
     public Transaction createTransaction(long srcAccountId, long dstAccountId, BigDecimal amount, Currency currency)
             throws TransactionServiceException {
         try {
-            Account srcAccount = accountRepo.getAccountById(srcAccountId);
-            Account dstAccount = accountRepo.getAccountById(dstAccountId);
-            Transaction txn = new Transaction(srcAccount, dstAccount, amount, currency);
+            accountRepo.getAccountById(srcAccountId);
+            accountRepo.getAccountById(dstAccountId);
+            Transaction txn = new Transaction(srcAccountId, dstAccountId, amount, currency);
             return transactionRepo.insert(txn);
         } catch (DataAccessException dae) {
             throw new TransactionServiceException("Could not create transaction", dae);

@@ -8,32 +8,32 @@ import java.util.Currency;
 public class Transaction {
 
     private Long id;
-    private Account src;
-    private Account dst;
+    private long srcId;
+    private long dstId;
     private BigDecimal amount;
     private Currency currency;
     private TransactionStatus status;
 
-    public Transaction(Account src, Account dst, BigDecimal amount, Currency currency) {
-        this(null, src, dst, amount, currency, TransactionStatus.PENDING);
+    public Transaction(long srcId, long dstId, BigDecimal amount, Currency currency) {
+        this(null, srcId, dstId, amount, currency, TransactionStatus.PENDING);
     }
 
-    public Transaction(Long id, Account src, Account dst, BigDecimal amount, Currency currency,
+    public Transaction(Long id, long srcId, long dstId, BigDecimal amount, Currency currency,
                        TransactionStatus status) {
         this.id = id;
-        this.src = src;
-        this.dst = dst;
+        this.srcId = srcId;
+        this.dstId = dstId;
         this.amount = amount;
         this.currency = currency;
         this.status = status;
     }
 
-    public Account getSource() {
-        return src;
+    public long getSourceId() {
+        return srcId;
     }
 
-    public Account getDestination() {
-        return dst;
+    public long getDestinationId() {
+        return dstId;
     }
 
     public BigDecimal getAmount() {
@@ -56,8 +56,8 @@ public class Transaction {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("src", src)
-                .add("dst", dst)
+                .add("srcId", srcId)
+                .add("dstId", dstId)
                 .add("amount", amount)
                 .add("currency", currency)
                 .add("status", status)

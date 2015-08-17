@@ -2,9 +2,9 @@ package com.revolut.interview.repos;
 
 import com.revolut.interview.model.Transaction;
 
-public class TransactionInsertAccessException extends DataAccessException {
+public class TransactionInsertException extends DataAccessException {
 
-    public TransactionInsertAccessException(Transaction transaction) {
+    public TransactionInsertException(Transaction transaction) {
         super("Could not insert transaction [" + transaction + "]");
     }
 }
