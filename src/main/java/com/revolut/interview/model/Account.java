@@ -1,5 +1,6 @@
 package com.revolut.interview.model;
 
+import com.google.common.base.Objects;
 import com.revolut.interview.utils.Assert;
 
 import java.math.BigDecimal;
@@ -37,5 +38,20 @@ public class Account {
 
     public Account withdraw(Amount amount) {
         return new Account(id, balance.subtract(amount));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Account account = (Account) o;
+        return Objects.equal(id, account.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

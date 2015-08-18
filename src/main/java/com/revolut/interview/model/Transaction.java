@@ -1,6 +1,7 @@
 package com.revolut.interview.model;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
 import java.util.Currency;
 
@@ -49,8 +50,27 @@ public class Transaction {
         return id;
     }
 
-    public Transaction execute() {
-        return new Transaction(id, srcId, dstId, amount, TransactionStatus.SUCCESSFUL);
+    public Transaction executed() {
+        return new Transaction(id, srcId, dstId, amount, TransactionStatus.EXECUTED);
+    }
+
+    public Transaction failed() {
+        return new Transaction(id, srcId, dstId, amount, TransactionStatus.FAILED);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Transaction that = (Transaction) o;
+        return Objects.equal(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override
@@ -66,7 +86,7 @@ public class Transaction {
 
     public enum TransactionStatus {
         FAILED,
-        SUCCESSFUL,
+        EXECUTED,
         PENDING
     }
 }

@@ -7,7 +7,7 @@ import com.revolut.interview.repos.*;
 
 import static com.revolut.interview.utils.Assert.checkNotNull;
 
-public class TheTransactionService implements TransactionService {
+class TheTransactionService implements TransactionService {
 
     private final AccountRepo accountRepo;
     private final TransactionRepo transactionRepo;

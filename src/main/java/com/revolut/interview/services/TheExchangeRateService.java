@@ -7,7 +7,7 @@ import com.revolut.interview.utils.Assert;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-public class TheExchangeRateService implements ExchangeRateService {
+class TheExchangeRateService implements ExchangeRateService {
 
     private final ExchangeRateRepo exchangeRateRepo;
 
