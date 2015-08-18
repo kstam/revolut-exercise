@@ -7,17 +7,17 @@ import java.util.Currency;
 
 public class Transaction {
 
-    private Long id;
+    private long id;
     private long srcId;
     private long dstId;
     private Amount amount;
     private TransactionStatus status;
 
     public Transaction(long srcId, long dstId, Amount amount) {
-        this(null, srcId, dstId, amount, TransactionStatus.PENDING);
+        this(0, srcId, dstId, amount, TransactionStatus.PENDING);
     }
 
-    public Transaction(Long id, long srcId, long dstId, Amount amount,
+    public Transaction(long id, long srcId, long dstId, Amount amount,
                        TransactionStatus status) {
         this.id = id;
         this.srcId = srcId;
@@ -46,7 +46,7 @@ public class Transaction {
         return status;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

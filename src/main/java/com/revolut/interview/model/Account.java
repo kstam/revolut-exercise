@@ -3,7 +3,6 @@ package com.revolut.interview.model;
 import com.google.common.base.Objects;
 import com.revolut.interview.utils.Assert;
 
-import java.math.BigDecimal;
 import java.util.Currency;
 
 public class Account {
@@ -11,6 +10,10 @@ public class Account {
     private long id;
     private Amount balance;
     private Currency currency;
+
+    public Account(Amount balance) {
+        this(0, balance);
+    }
 
     public Account(long id, Amount balance) {
         Assert.checkNotNull(balance, "balance cannot be null");

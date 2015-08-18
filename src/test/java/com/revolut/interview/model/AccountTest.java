@@ -16,7 +16,7 @@ public class AccountTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testCannotBeInitialiezedWithNegativeId() {
-        new Account(-1, TestConstants.EUR_10);
+        new Account(-1L, TestConstants.EUR_10);
     }
 
     @Test
