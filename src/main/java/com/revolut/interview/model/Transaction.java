@@ -2,7 +2,6 @@ package com.revolut.interview.model;
 
 import com.google.common.base.MoreObjects;
 
-import java.math.BigDecimal;
 import java.util.Currency;
 
 public class Transaction {
@@ -10,21 +9,19 @@ public class Transaction {
     private Long id;
     private long srcId;
     private long dstId;
-    private BigDecimal amount;
-    private Currency currency;
+    private Amount amount;
     private TransactionStatus status;
 
-    public Transaction(long srcId, long dstId, BigDecimal amount, Currency currency) {
-        this(null, srcId, dstId, amount, currency, TransactionStatus.PENDING);
+    public Transaction(long srcId, long dstId, Amount amount) {
+        this(null, srcId, dstId, amount, TransactionStatus.PENDING);
     }
 
-    public Transaction(Long id, long srcId, long dstId, BigDecimal amount, Currency currency,
+    public Transaction(Long id, long srcId, long dstId, Amount amount,
                        TransactionStatus status) {
         this.id = id;
         this.srcId = srcId;
         this.dstId = dstId;
         this.amount = amount;
-        this.currency = currency;
         this.status = status;
     }
 
@@ -36,12 +33,12 @@ public class Transaction {
         return dstId;
     }
 
-    public BigDecimal getAmount() {
+    public Amount getAmount() {
         return amount;
     }
 
     public Currency getCurrency() {
-        return currency;
+        return amount.getCurrency();
     }
 
     public TransactionStatus getStatus() {
@@ -52,6 +49,10 @@ public class Transaction {
         return id;
     }
 
+    public Transaction execute() {
+        return new Transaction(id, srcId, dstId, amount, TransactionStatus.SUCCESSFUL);
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -59,7 +60,6 @@ public class Transaction {
                 .add("srcId", srcId)
                 .add("dstId", dstId)
                 .add("amount", amount)
-                .add("currency", currency)
                 .add("status", status)
                 .toString();
     }

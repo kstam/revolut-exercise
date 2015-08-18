@@ -7,6 +7,12 @@ public class Assert {
         }
     }
 
+    public static void checkIsTrue(boolean value, String message) {
+        if (!value) {
+            error(message);
+        }
+    }
+
     private static void error(String msg) {
         throw new IllegalArgumentException(msg);
     }
