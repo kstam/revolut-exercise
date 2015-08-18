@@ -10,5 +10,7 @@ public interface TransactionRepo {
 
     Transaction getById(long transactionId) throws DataAccessException;
 
-    boolean lockById(long transactionId) throws DataAccessException;
+    void lockById(long transactionId) throws DataAccessException;
+
+    void unlockById(long transactionId) throws DataAccessException;
 }
