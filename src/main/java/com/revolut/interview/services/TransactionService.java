@@ -8,6 +8,6 @@ public interface TransactionService {
     Transaction createTransaction(long srcAccountId, long dstAccountId, Amount amount)
             throws TransactionServiceException;
 
-    boolean executeTransaction(long transactionId);
+    ExecuteTransactionResult executeTransaction(long transactionId) throws TransactionServiceException;
 
 }
