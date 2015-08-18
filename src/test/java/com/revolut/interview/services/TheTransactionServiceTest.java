@@ -18,9 +18,7 @@ import java.util.List;
 
 import static com.revolut.interview.utils.TestConstants.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.testng.Assert.*;
 
@@ -90,12 +88,13 @@ public class TheTransactionServiceTest {
         Transaction transaction = transactionService
                 .createTransaction(account1.getId(), account2.getId(), SMALL_AMOUNT);
 
-        assertEquals(transaction.getId(), new Long(1L));
+        assertEquals(transaction.getId(), 1L);
         assertEquals(transaction.getSourceId(), account1.getId());
         assertEquals(transaction.getDestinationId(), account2.getId());
         assertEquals(transaction.getCurrency(), EUR);
         assertEquals(transaction.getStatus(), TransactionStatus.PENDING);
         assertTrue(transaction.getAmount().equals(SMALL_AMOUNT));
+        verify(transactionRepo).insert(any(Transaction.class));
     }
 
     @Test
@@ -126,7 +125,7 @@ public class TheTransactionServiceTest {
     @Test
     public void testExecuteReturnsAppropriateErrorIfLockingOfTransactionFails()
             throws DataAccessException, TransactionServiceException {
-        when(transactionRepo.lockById(1L)).thenThrow(new CouldNotLockResourceException(""));
+        doThrow(new CouldNotLockResourceException("")).when(transactionRepo).lockById(1L);
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
@@ -138,7 +137,7 @@ public class TheTransactionServiceTest {
             throws DataAccessException, TransactionServiceException {
         when(transactionRepo.getById(1L)).thenReturn(
                 new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.PENDING));
-        when(accountRepo.lockById(account1.getId())).thenThrow(new CouldNotLockResourceException("theMessage"));
+        doThrow(new CouldNotLockResourceException("theMessage")).when(accountRepo).lockById(account1.getId());
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
@@ -151,7 +150,7 @@ public class TheTransactionServiceTest {
             throws DataAccessException, TransactionServiceException {
         when(transactionRepo.getById(1L)).thenReturn(
                 new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.PENDING));
-        when(accountRepo.lockById(account2.getId())).thenThrow(new CouldNotLockResourceException("theMessage"));
+        doThrow(new CouldNotLockResourceException("theMessage")).when(accountRepo).lockById(account2.getId());
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
@@ -176,7 +175,7 @@ public class TheTransactionServiceTest {
             throws DataAccessException, TransactionServiceException {
         when(transactionRepo.getById(1L)).thenReturn(
                 new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.PENDING));
-        when(accountRepo.lockById(account1.getId())).thenThrow(new AccountNotFoundException(account1.getId()));
+        doThrow(new AccountNotFoundException(account1.getId())).when(accountRepo).lockById(account1.getId());
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
@@ -189,7 +188,7 @@ public class TheTransactionServiceTest {
             throws DataAccessException, TransactionServiceException {
         when(transactionRepo.getById(1L)).thenReturn(
                 new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.PENDING));
-        when(accountRepo.lockById(account2.getId())).thenThrow(new AccountNotFoundException(account2.getId()));
+        doThrow(new AccountNotFoundException(account2.getId())).when(accountRepo).lockById(account2.getId());
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
@@ -210,7 +209,7 @@ public class TheTransactionServiceTest {
     }
 
     @Test
-    public void testAccountsAreSavedWithTheirNewValues() throws DataAccessException, TransactionServiceException {
+    public void testExecuteSavesAccountsWithTheirNewBalance() throws DataAccessException, TransactionServiceException {
         when(transactionRepo.getById(1L)).thenReturn(
                 new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.PENDING));
 
@@ -233,15 +232,61 @@ public class TheTransactionServiceTest {
     }
 
     @Test
-    public void testTransactionIsSavedOnFailure() throws DataAccessException, TransactionServiceException {
+    public void testExecuteSavesTransactionOnFailure() throws DataAccessException, TransactionServiceException {
         when(transactionRepo.getById(1L)).thenReturn(
                 new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.PENDING));
-        when(accountRepo.lockById(account2.getId())).thenThrow(new CouldNotLockResourceException("theMessage"));
+        doThrow(new CouldNotLockResourceException("theMessage")).when(accountRepo).lockById(account2.getId());
         transactionService.executeTransaction(1L);
 
         ArgumentCaptor<Transaction> captor = ArgumentCaptor.forClass(Transaction.class);
         verify(transactionRepo).update(captor.capture());
 
         assertEquals(captor.getValue().getStatus(), TransactionStatus.FAILED);
+    }
+
+
+    @Test
+    public void testExecuteDoesNothingIfTransactionIsAlreadyExecuted()
+            throws DataAccessException, TransactionServiceException {
+        when(transactionRepo.getById(1L)).thenReturn(
+                new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.EXECUTED));
+
+        ExecuteTransactionResult result = transactionService.executeTransaction(1L);
+        assertEquals(result.getExecutionStatus(), ExecutionStatus.UNCHANGED);
+    }
+
+    @Test
+    public void testExecuteDoesNothingIfTransactionIsAlreadyFailed()
+        throws DataAccessException, TransactionServiceException {
+            when(transactionRepo.getById(1L)).thenReturn(
+                    new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.FAILED));
+
+            ExecuteTransactionResult result = transactionService.executeTransaction(1L);
+            assertEquals(result.getExecutionStatus(), ExecutionStatus.UNCHANGED);
+    }
+
+    @Test
+    public void testExecuteUnlocksResourcesOnFailure() throws DataAccessException, TransactionServiceException {
+        when(transactionRepo.getById(1L)).thenReturn(
+                new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.PENDING));
+        doThrow(new CouldNotLockResourceException("theMessage")).when(accountRepo).lockById(account2.getId());
+
+        transactionService.executeTransaction(1L);
+
+        verify(transactionRepo).unlockById(1L);
+        verify(accountRepo).unlockById(account1.getId());
+        verify(accountRepo).unlockById(account2.getId());
+    }
+
+    @Test
+    public void testExecuteUnlocksResourcesOnSuccess() throws DataAccessException, TransactionServiceException {
+        when(transactionRepo.getById(1L)).thenReturn(
+                new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.PENDING));
+
+        transactionService.executeTransaction(1L);
+
+        verify(transactionRepo).unlockById(1L);
+        verify(accountRepo).unlockById(account1.getId());
+        verify(accountRepo).unlockById(account2.getId());
     }
 }

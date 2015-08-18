@@ -3,6 +3,7 @@ package com.revolut.interview.services;
 import com.revolut.interview.model.Account;
 import com.revolut.interview.model.Amount;
 import com.revolut.interview.model.Transaction;
+import com.revolut.interview.model.Transaction.TransactionStatus;
 import com.revolut.interview.repos.*;
 import com.revolut.interview.services.ExecuteTransactionResult.ExecutionStatus;
 
@@ -45,6 +46,11 @@ class TheTransactionService implements TransactionService {
             transactionRepo.lockById(transactionId);
             txn = transactionRepo.getById(transactionId);
 
+            if (!txn.getStatus().equals(TransactionStatus.PENDING)) {
+                return new ExecuteTransactionResult(txn, UNCHANGED,
+                        "No changes. Transaction was already " + txn.getStatus());
+            }
+
             accountRepo.lockById(txn.getSourceId());
             accountRepo.lockById(txn.getDestinationId());
 
@@ -52,7 +58,7 @@ class TheTransactionService implements TransactionService {
             dstAccount = accountRepo.getById(txn.getDestinationId());
 
             Amount toWithdraw = exchangeRateService.convert(txn.getAmount(), srcAccount.getCurrency());
-            if (!sufficientFunds(srcAccount, toWithdraw)) {
+            if (!containsSufficientFunds(srcAccount, toWithdraw)) {
                 String message = String.format("Account had %s but needed %s to complete the transaction",
                         srcAccount.getBalance(), toWithdraw);
                 return transactionFailed(txn, INSUFFICIENT_FUNDS, message);
@@ -72,10 +78,24 @@ class TheTransactionService implements TransactionService {
             return transactionFailed(txn, ACCOUNT_NOT_FOUND, anfe.getMessage());
         } catch (DataAccessException e) {
             throw new TransactionServiceException("Error", e);
+        } finally {
+            unlockResources(transactionId, txn);
         }
     }
 
-    private boolean sufficientFunds(Account account, Amount neededBalance) {
+    private void unlockResources(long transactionId, Transaction txn) throws TransactionServiceException {
+        try {
+            transactionRepo.unlockById(transactionId);
+            if (txn != null) {
+                accountRepo.unlockById(txn.getSourceId());
+                accountRepo.unlockById(txn.getDestinationId());
+            }
+        } catch (DataAccessException e) {
+            throw new TransactionServiceException("Error unlocking the resources", e);
+        }
+    }
+
+    private boolean containsSufficientFunds(Account account, Amount neededBalance) {
         return account.getBalance().getValue().compareTo(neededBalance.getValue()) >= 0;
     }
 
