@@ -1,4 +1,4 @@
-package com.revolut.interview.services;
+package com.revolut.interview.repos;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -11,13 +11,13 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertTrue;
 
-public class DummyExchangeRateServiceTest {
+public class DummyExchangeRateRepoTest {
 
-    ExchangeRateService exchangeRateService;
+    ExchangeRateRepo repo;
 
     @BeforeMethod
     public void setup() {
-        exchangeRateService = new DummyExchangeRateService();
+        repo = new DummyExchangeRateRepo();
     }
 
     @DataProvider
@@ -42,6 +42,6 @@ public class DummyExchangeRateServiceTest {
 
     @Test(dataProvider = "currencyCombinations")
     public void testReturnsOneForAnyCurrencyCombination(Currency c1, Currency c2) {
-        assertTrue(exchangeRateService.getExchangeRate(c1, c2).equals(BigDecimal.ONE));
+        assertTrue(repo.getExchangeRate(c1, c2).equals(BigDecimal.ONE));
     }
 }

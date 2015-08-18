@@ -10,6 +10,7 @@ public interface TestConstants {
     Currency USD = Currency.getInstance("USD");
 
     Amount EUR_10 = new Amount(BigDecimal.TEN, TestConstants.EUR);
-    Amount EUR_5 = new Amount(new BigDecimal("5"), TestConstants.EUR);
-    Amount USD_20 = new Amount(new BigDecimal("20"), TestConstants.USD);
+    Amount EUR_100 = new Amount(new BigDecimal(100), TestConstants.EUR);
+    Amount EUR_5 = new Amount(new BigDecimal(5), TestConstants.EUR);
+    Amount USD_20 = new Amount(new BigDecimal(20), TestConstants.USD);
 }
