@@ -1,7 +1,11 @@
-package com.revolut.interview.repos;
+package com.revolut.interview.repos.inmemory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.revolut.interview.model.Account;
+import com.revolut.interview.repos.AccountNotFoundException;
+import com.revolut.interview.repos.AccountRepo;
+import com.revolut.interview.repos.CouldNotLockResourceException;
+import com.revolut.interview.repos.DataAccessException;
 import com.revolut.interview.utils.Assert;
 
 import java.util.List;

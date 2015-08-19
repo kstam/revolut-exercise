@@ -1,6 +1,9 @@
-package com.revolut.interview.repos;
+package com.revolut.interview.repos.inmemory;
 
 import com.revolut.interview.model.Transaction;
+import com.revolut.interview.repos.CouldNotLockResourceException;
+import com.revolut.interview.repos.DataAccessException;
+import com.revolut.interview.repos.inmemory.InMemoryTransactionRepo;
 import com.revolut.interview.utils.TestConstants;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

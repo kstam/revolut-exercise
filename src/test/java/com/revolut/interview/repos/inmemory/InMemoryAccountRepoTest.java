@@ -1,7 +1,10 @@
-package com.revolut.interview.repos;
+package com.revolut.interview.repos.inmemory;
 
 import com.revolut.interview.model.Account;
 import com.revolut.interview.model.Amount;
+import com.revolut.interview.repos.CouldNotLockResourceException;
+import com.revolut.interview.repos.DataAccessException;
+import com.revolut.interview.repos.inmemory.InMemoryAccountRepo;
 import com.revolut.interview.utils.TestConstants;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

@@ -1,5 +1,7 @@
-package com.revolut.interview.repos;
+package com.revolut.interview.repos.inmemory;
 
+import com.revolut.interview.repos.ExchangeRateRepo;
+import com.revolut.interview.repos.inmemory.DummyExchangeRateRepo;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

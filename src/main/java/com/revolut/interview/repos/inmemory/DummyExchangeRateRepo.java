@@ -1,4 +1,6 @@
-package com.revolut.interview.repos;
+package com.revolut.interview.repos.inmemory;
+
+import com.revolut.interview.repos.ExchangeRateRepo;
 
 import java.math.BigDecimal;
 import java.util.Currency;
