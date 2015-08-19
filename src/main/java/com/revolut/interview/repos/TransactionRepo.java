@@ -2,6 +2,8 @@ package com.revolut.interview.repos;
 
 import com.revolut.interview.model.Transaction;
 
+import java.util.List;
+
 public interface TransactionRepo {
 
     Transaction insert(Transaction transaction) throws DataAccessException;
@@ -13,4 +15,6 @@ public interface TransactionRepo {
     void lockById(long transactionId) throws DataAccessException;
 
     void unlockById(long transactionId) throws DataAccessException;
+
+    List<Transaction> getAll() throws DataAccessException;
 }

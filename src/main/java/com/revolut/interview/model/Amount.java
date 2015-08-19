@@ -12,6 +12,10 @@ public class Amount {
     private BigDecimal value;
     private Currency currency;
 
+    Amount() {
+        // empty constructor for Jackson
+    }
+
     public Amount(BigDecimal value, Currency currency) {
         Assert.checkNotNull(value, "value cannot be null");
         Assert.checkNotNull(currency, "currency cannot be null");

@@ -4,11 +4,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.revolut.interview.model.Account;
 import com.revolut.interview.utils.Assert;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 class InMemoryAccountRepo implements AccountRepo {
 
@@ -53,6 +55,11 @@ class InMemoryAccountRepo implements AccountRepo {
         if (semaphore != null && semaphore.availablePermits() == 0) {
             semaphore.release();
         }
+    }
+
+    @Override
+    public List<Account> getAll() {
+        return accountsMap.values().stream().collect(Collectors.toList());
     }
 
     @VisibleForTesting

@@ -4,11 +4,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.revolut.interview.model.Transaction;
 import com.revolut.interview.utils.Assert;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 class InMemoryTransactionRepo implements TransactionRepo {
 
@@ -55,6 +57,11 @@ class InMemoryTransactionRepo implements TransactionRepo {
         if (semaphore != null && semaphore.availablePermits() == 0) {
             semaphore.release();
         }
+    }
+
+    @Override
+    public List<Transaction> getAll() throws DataAccessException {
+        return transactionsMap.values().stream().collect(Collectors.toList());
     }
 
     @VisibleForTesting

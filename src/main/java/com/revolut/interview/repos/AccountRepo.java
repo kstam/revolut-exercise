@@ -2,6 +2,8 @@ package com.revolut.interview.repos;
 
 import com.revolut.interview.model.Account;
 
+import java.util.List;
+
 public interface AccountRepo {
 
     Account insert(Account account) throws DataAccessException;
@@ -14,4 +16,5 @@ public interface AccountRepo {
 
     void unlockById(long accountId) throws DataAccessException;
 
+    List<Account> getAll();
 }

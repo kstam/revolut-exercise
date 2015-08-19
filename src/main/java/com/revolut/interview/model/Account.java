@@ -11,6 +11,10 @@ public class Account {
     private Amount balance;
     private Currency currency;
 
+    Account() {
+        // empty constructor for Jackson
+    }
+
     public Account(Amount balance) {
         this(0, balance);
     }

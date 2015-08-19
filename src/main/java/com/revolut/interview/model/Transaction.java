@@ -8,30 +8,34 @@ import java.util.Currency;
 public class Transaction {
 
     private long id;
-    private long srcId;
-    private long dstId;
+    private long sourceId;
+    private long destinationId;
     private Amount amount;
     private TransactionStatus status;
 
-    public Transaction(long srcId, long dstId, Amount amount) {
-        this(0, srcId, dstId, amount, TransactionStatus.PENDING);
+    Transaction() {
+        // empty constructor for Jackson
     }
 
-    public Transaction(long id, long srcId, long dstId, Amount amount,
+    public Transaction(long sourceId, long destinationId, Amount amount) {
+        this(0, sourceId, destinationId, amount, TransactionStatus.PENDING);
+    }
+
+    public Transaction(long id, long sourceId, long destinationId, Amount amount,
                        TransactionStatus status) {
         this.id = id;
-        this.srcId = srcId;
-        this.dstId = dstId;
+        this.sourceId = sourceId;
+        this.destinationId = destinationId;
         this.amount = amount;
         this.status = status;
     }
 
     public long getSourceId() {
-        return srcId;
+        return sourceId;
     }
 
     public long getDestinationId() {
-        return dstId;
+        return destinationId;
     }
 
     public Amount getAmount() {
@@ -51,11 +55,11 @@ public class Transaction {
     }
 
     public Transaction executed() {
-        return new Transaction(id, srcId, dstId, amount, TransactionStatus.EXECUTED);
+        return new Transaction(id, sourceId, destinationId, amount, TransactionStatus.EXECUTED);
     }
 
     public Transaction failed() {
-        return new Transaction(id, srcId, dstId, amount, TransactionStatus.FAILED);
+        return new Transaction(id, sourceId, destinationId, amount, TransactionStatus.FAILED);
     }
 
     @Override
@@ -77,8 +81,8 @@ public class Transaction {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("srcId", srcId)
-                .add("dstId", dstId)
+                .add("sourceId", sourceId)
+                .add("destinationId", destinationId)
                 .add("amount", amount)
                 .add("status", status)
                 .toString();
