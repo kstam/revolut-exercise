@@ -47,6 +47,11 @@ public class AmountTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testCannotInitializeNegativeAmount() {
+        new Amount(new BigDecimal("-10"), TestConstants.EUR);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testCannotSubtractBiggerAmountFromSmallerAmount() {
         Amount a1 = TestConstants.EUR_10;
         Amount a2 = TestConstants.EUR_5;

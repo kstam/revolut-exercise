@@ -19,6 +19,7 @@ public class Amount {
     public Amount(BigDecimal value, Currency currency) {
         Assert.checkNotNull(value, "value cannot be null");
         Assert.checkNotNull(currency, "currency cannot be null");
+        Assert.checkIsTrue(value.compareTo(BigDecimal.ZERO) >= 0, "cannot initialize amount to negative value");
         this.value = value;
         this.currency = currency;
     }
