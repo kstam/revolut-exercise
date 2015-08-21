@@ -5,17 +5,17 @@ import com.revolut.interview.model.Transaction;
 public class ExecuteTransactionResult {
 
     private final Transaction transaction;
-    private final ExecutionStatus executionStatus;
-    private final String originalErrorMessage;
+    private final ExecutionStatus status;
+    private final String detailMessage;
 
-    public ExecuteTransactionResult(Transaction transaction, ExecutionStatus executionStatus) {
-        this(transaction, executionStatus, null);
+    public ExecuteTransactionResult(Transaction transaction, ExecutionStatus status) {
+        this(transaction, status, "");
     }
 
-    public ExecuteTransactionResult(Transaction transaction, ExecutionStatus executionStatus, String originalErrorMessage) {
+    public ExecuteTransactionResult(Transaction transaction, ExecutionStatus status, String detailMessage) {
         this.transaction = transaction;
-        this.executionStatus = executionStatus;
-        this.originalErrorMessage = originalErrorMessage;
+        this.status = status;
+        this.detailMessage = detailMessage;
     }
 
 
@@ -23,12 +23,12 @@ public class ExecuteTransactionResult {
         return transaction;
     }
 
-    public ExecutionStatus getExecutionStatus() {
-        return executionStatus;
+    public ExecutionStatus getStatus() {
+        return status;
     }
 
-    public String getOriginalErrorMessage() {
-        return originalErrorMessage;
+    public String getDetailMessage() {
+        return detailMessage;
     }
 
     public enum ExecutionStatus {
@@ -38,11 +38,12 @@ public class ExecuteTransactionResult {
         UNCHANGED(3040, "Transaction already executed"),
 
         //Errors
-        INSUFFICIENT_FUNDS(4000, "Source account has insufficient funds"),
-        TRANSACTION_NOT_FOUND(4040, "Transaction could not be located"),
-        ACCOUNT_NOT_FOUND(4041, "Account could not be located"),
+        INSUFFICIENT_FUNDS(4220, "Source account has insufficient funds"),
+        TRANSACTION_NOT_FOUND(4221, "Transaction could not be located"),
+        ACCOUNT_NOT_FOUND(4222, "Account could not be located"),
 
-        COULD_NOT_ACQUIRE_RESOURCES(5000, "Resources could not be acquired");
+        INTERNAL_ERROR(5000, "Unpredictable internal error"),
+        COULD_NOT_ACQUIRE_RESOURCES(5001, "Resources could not be acquired");
 
         private final int statusCode;
         private final String description;

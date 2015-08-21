@@ -1,5 +1,6 @@
 package com.revolut.interview.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.revolut.interview.utils.Assert;
 
@@ -60,5 +61,14 @@ public class Account {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("balance", balance)
+                .add("currency", currency)
+                .toString();
     }
 }

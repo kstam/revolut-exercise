@@ -5,6 +5,7 @@ import com.revolut.interview.model.Amount;
 import com.revolut.interview.model.Transaction;
 import com.revolut.interview.model.Transaction.TransactionStatus;
 import com.revolut.interview.repos.*;
+import com.revolut.interview.services.CreateTransactionResult.CreationStatus;
 import com.revolut.interview.services.ExecuteTransactionResult.ExecutionStatus;
 import com.revolut.interview.utils.TestUtils;
 import org.mockito.ArgumentCaptor;
@@ -85,9 +86,13 @@ public class TheTransactionServiceTest {
                     TransactionStatus.PENDING);
         });
 
-        Transaction transaction = transactionService
+        CreateTransactionResult result = transactionService
                 .createTransaction(account1.getId(), account2.getId(), SMALL_AMOUNT);
 
+        assertEquals(result.getStatus(), CreationStatus.SUCCESS);
+        assertEquals(result.getDetailMessage(), "");
+
+        Transaction transaction = result.getTransaction();
         assertEquals(transaction.getId(), 1L);
         assertEquals(transaction.getSourceId(), account1.getId());
         assertEquals(transaction.getDestinationId(), account2.getId());
@@ -100,12 +105,11 @@ public class TheTransactionServiceTest {
     @Test
     public void testCreateTransactionThrowsExceptionIfAccountDoesNotExist() throws DataAccessException {
         when(accountRepo.getById(3L)).thenThrow(new AccountNotFoundException(3L));
-        try {
-            transactionService.createTransaction(account1.getId(), 3L, SMALL_AMOUNT);
-            fail("Exception was not thrown");
-        } catch (TransactionServiceException tse) {
-            assertTrue(tse.getCause() instanceof AccountNotFoundException);
-        }
+        CreateTransactionResult result = transactionService.createTransaction(account1.getId(), 3L, SMALL_AMOUNT);
+
+        assertNull(result.getTransaction());
+        assertEquals(result.getStatus(), CreationStatus.ACCOUNT_NOT_FOUND);
+        assertTrue(result.getDetailMessage().contains("[3]"));
     }
 
     @Test
@@ -114,12 +118,9 @@ public class TheTransactionServiceTest {
             throw new TransactionInsertException((Transaction) invocation.getArguments()[0]);
         });
 
-        try {
-            transactionService.createTransaction(account1.getId(), 3L, SMALL_AMOUNT);
-            fail("Exception was not thrown");
-        } catch (TransactionServiceException tse) {
-            assertTrue(tse.getCause() instanceof TransactionInsertException);
-        }
+        CreateTransactionResult result = transactionService.createTransaction(account1.getId(), 3L, SMALL_AMOUNT);
+        assertNull(result.getTransaction());
+        assertEquals(result.getStatus(), CreationStatus.INTERNAL_ERROR);
     }
 
     @Test
@@ -129,7 +130,7 @@ public class TheTransactionServiceTest {
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.COULD_NOT_ACQUIRE_RESOURCES);
+        assertEquals(result.getStatus(), ExecutionStatus.COULD_NOT_ACQUIRE_RESOURCES);
     }
 
     @Test
@@ -141,8 +142,8 @@ public class TheTransactionServiceTest {
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.COULD_NOT_ACQUIRE_RESOURCES);
-        assertEquals(result.getOriginalErrorMessage(), "theMessage");
+        assertEquals(result.getStatus(), ExecutionStatus.COULD_NOT_ACQUIRE_RESOURCES);
+        assertEquals(result.getDetailMessage(), "theMessage");
     }
 
     @Test
@@ -155,8 +156,8 @@ public class TheTransactionServiceTest {
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
         assertEquals(result.getTransaction().getStatus(), TransactionStatus.FAILED);
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.COULD_NOT_ACQUIRE_RESOURCES);
-        assertEquals(result.getOriginalErrorMessage(), "theMessage");
+        assertEquals(result.getStatus(), ExecutionStatus.COULD_NOT_ACQUIRE_RESOURCES);
+        assertEquals(result.getDetailMessage(), "theMessage");
     }
 
     @Test
@@ -167,7 +168,7 @@ public class TheTransactionServiceTest {
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
         assertNull(result.getTransaction());
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.TRANSACTION_NOT_FOUND);
+        assertEquals(result.getStatus(), ExecutionStatus.TRANSACTION_NOT_FOUND);
     }
 
     @Test
@@ -180,7 +181,7 @@ public class TheTransactionServiceTest {
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
         assertEquals(result.getTransaction().getStatus(), TransactionStatus.FAILED);
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.ACCOUNT_NOT_FOUND);
+        assertEquals(result.getStatus(), ExecutionStatus.ACCOUNT_NOT_FOUND);
     }
 
     @Test
@@ -193,7 +194,7 @@ public class TheTransactionServiceTest {
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
         assertEquals(result.getTransaction().getStatus(), TransactionStatus.FAILED);
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.ACCOUNT_NOT_FOUND);
+        assertEquals(result.getStatus(), ExecutionStatus.ACCOUNT_NOT_FOUND);
     }
 
     @Test
@@ -204,7 +205,7 @@ public class TheTransactionServiceTest {
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
 
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.INSUFFICIENT_FUNDS);
+        assertEquals(result.getStatus(), ExecutionStatus.INSUFFICIENT_FUNDS);
         assertEquals(result.getTransaction().getStatus(), TransactionStatus.FAILED);
     }
 
@@ -222,7 +223,7 @@ public class TheTransactionServiceTest {
         TestUtils.assertEquals(savedAccounts.get(0).getBalance().getValue(), new BigDecimal(5));
         TestUtils.assertEquals(savedAccounts.get(1).getBalance().getValue(), new BigDecimal(25));
 
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.SUCCESS);
+        assertEquals(result.getStatus(), ExecutionStatus.SUCCESS);
         assertEquals(result.getTransaction().getStatus(), TransactionStatus.EXECUTED);
 
         ArgumentCaptor<Transaction> txnCaptor = ArgumentCaptor.forClass(Transaction.class);
@@ -252,7 +253,7 @@ public class TheTransactionServiceTest {
                 new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.EXECUTED));
 
         ExecuteTransactionResult result = transactionService.executeTransaction(1L);
-        assertEquals(result.getExecutionStatus(), ExecutionStatus.UNCHANGED);
+        assertEquals(result.getStatus(), ExecutionStatus.UNCHANGED);
     }
 
     @Test
@@ -262,7 +263,7 @@ public class TheTransactionServiceTest {
                     new Transaction(1L, account1.getId(), account2.getId(), SMALL_AMOUNT, TransactionStatus.FAILED));
 
             ExecuteTransactionResult result = transactionService.executeTransaction(1L);
-            assertEquals(result.getExecutionStatus(), ExecutionStatus.UNCHANGED);
+            assertEquals(result.getStatus(), ExecutionStatus.UNCHANGED);
     }
 
     @Test
@@ -289,4 +290,5 @@ public class TheTransactionServiceTest {
         verify(accountRepo).unlockById(account1.getId());
         verify(accountRepo).unlockById(account2.getId());
     }
+
 }

@@ -4,6 +4,7 @@ import com.revolut.interview.utils.TestConstants;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -18,6 +19,11 @@ public class AmountTest {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testCannotBeInitializedWithNullCurrency() {
         new Amount(BigDecimal.TEN, null);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testCannotInitializeNegativeAmount() {
+        new Amount(new BigDecimal("-10"), TestConstants.EUR);
     }
 
     @Test
@@ -44,11 +50,6 @@ public class AmountTest {
         Amount a2 = new Amount(BigDecimal.TEN, TestConstants.USD);
 
         a1.subtract(a2);
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testCannotInitializeNegativeAmount() {
-        new Amount(new BigDecimal("-10"), TestConstants.EUR);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
