@@ -9,6 +9,7 @@ import com.revolut.interview.utils.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,7 +27,7 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/accounts", method = RequestMethod.GET)
-    public List<Account> getAllAccounts() {
+    public List<Account> getAllAccounts() throws DataAccessException {
         return accountRepo.getAll();
     }
 
@@ -48,7 +49,7 @@ public class AccountController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Account> getAllAccounts(@RequestBody Account account, UriComponentsBuilder b)
             throws DataAccessException {
-        //force validation
+        //account validation
         account = new Account(new Amount(account.getBalance().getValue(), account.getBalance().getCurrency()));
         Account newAccount = accountRepo.insert(account);
         return ResponseEntity
@@ -56,9 +57,13 @@ public class AccountController {
                 .body(newAccount);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> illegalArgumentExceptionHandler(IllegalArgumentException iae) {
-        return ResponseEntity.badRequest().body(iae.getMessage());
+    @ExceptionHandler({IllegalArgumentException.class, HttpMessageConversionException.class})
+    public ResponseEntity<ExceptionResponse> illegalArgumentExceptionHandler(RuntimeException re) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(re));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> unexpectedExceptionHandler(Exception e) {
+        return ResponseEntity.status(500).body(new ExceptionResponse(e));
+    }
 }

@@ -12,6 +12,8 @@ import static com.revolut.interview.utils.Assert.checkNotNull;
 
 class TheTransactionService implements TransactionService {
 
+    public static final String INSUFFICIENT_FUNDS_MSG_TEMPLATE =
+            "Account had %s but needed %s to complete the transaction";
     private final AccountRepo accountRepo;
     private final TransactionRepo transactionRepo;
     private final ExchangeRateService exchangeRateService;
@@ -61,8 +63,7 @@ class TheTransactionService implements TransactionService {
 
             Amount toWithdraw = exchangeRateService.convert(txn.getAmount(), srcAccount.getCurrency());
             if (!containsSufficientFunds(srcAccount, toWithdraw)) {
-                String message = String.format("Account had %s but needed %s to complete the transaction",
-                        srcAccount.getBalance(), toWithdraw);
+                String message = String.format(INSUFFICIENT_FUNDS_MSG_TEMPLATE, srcAccount.getBalance(), toWithdraw);
                 return executionFailed(txn, ExecutionStatus.INSUFFICIENT_FUNDS, message);
             }
             Account newSrcAccount = srcAccount.withdraw(toWithdraw);

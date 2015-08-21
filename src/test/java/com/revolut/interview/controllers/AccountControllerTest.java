@@ -1,6 +1,5 @@
 package com.revolut.interview.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revolut.interview.config.SpringRootConfig;
 import com.revolut.interview.model.Account;
