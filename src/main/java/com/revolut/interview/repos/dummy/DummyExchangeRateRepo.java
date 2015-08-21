@@ -1,4 +1,4 @@
-package com.revolut.interview.repos.inmemory;
+package com.revolut.interview.repos.dummy;
 
 import com.revolut.interview.repos.ExchangeRateRepo;
 
