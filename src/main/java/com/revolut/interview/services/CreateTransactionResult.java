@@ -39,19 +39,19 @@ public class CreateTransactionResult {
         INTERNAL_ERROR(5000, "Unexpected error");
 
         private final int statusCode;
-        private final String message;
+        private final String description;
 
-        CreationStatus(int statusCode, String message) {
+        CreationStatus(int statusCode, String description) {
             this.statusCode = statusCode;
-            this.message = message;
+            this.description = description;
         }
 
         public int getStatusCode() {
             return statusCode;
         }
 
-        public String getMessage() {
-            return message;
+        public String getDescription() {
+            return description;
         }
     }
 }

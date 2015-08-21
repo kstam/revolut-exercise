@@ -16,5 +16,7 @@ public interface AccountRepo {
 
     void unlockById(long accountId) throws DataAccessException;
 
-    List<Account> getAll();
+    List<Account> getAll() throws DataAccessException;
+
+    void deleteAll() throws DataAccessException;
 }

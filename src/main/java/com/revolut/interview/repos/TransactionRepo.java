@@ -17,4 +17,6 @@ public interface TransactionRepo {
     void unlockById(long transactionId) throws DataAccessException;
 
     List<Transaction> getAll() throws DataAccessException;
+
+    void deleteAll() throws DataAccessException;
 }

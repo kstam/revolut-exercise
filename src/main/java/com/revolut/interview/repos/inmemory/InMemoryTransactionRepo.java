@@ -68,6 +68,13 @@ class InMemoryTransactionRepo implements TransactionRepo {
         return transactionsMap.values().stream().collect(Collectors.toList());
     }
 
+    @Override
+    public void deleteAll() throws DataAccessException {
+        transactionLocks = new ConcurrentHashMap<>();
+        transactionsMap = new ConcurrentHashMap<>();
+        maxTransactionId.set(0);
+    }
+
     @VisibleForTesting
     void lockById(long transactionId, long milliseconds) throws DataAccessException {
         Semaphore semaphore = transactionLocks.get(transactionId);

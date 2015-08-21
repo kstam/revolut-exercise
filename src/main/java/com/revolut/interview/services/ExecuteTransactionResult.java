@@ -38,8 +38,8 @@ public class ExecuteTransactionResult {
         UNCHANGED(3040, "Transaction already executed"),
 
         //Errors
+        TRANSACTION_NOT_FOUND(4041, "Transaction could not be located"),
         INSUFFICIENT_FUNDS(4220, "Source account has insufficient funds"),
-        TRANSACTION_NOT_FOUND(4221, "Transaction could not be located"),
         ACCOUNT_NOT_FOUND(4222, "Account could not be located"),
 
         INTERNAL_ERROR(5000, "Unpredictable internal error"),

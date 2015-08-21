@@ -66,6 +66,13 @@ class InMemoryAccountRepo implements AccountRepo {
         return accountsMap.values().stream().collect(Collectors.toList());
     }
 
+    @Override
+    public void deleteAll() throws DataAccessException {
+        accountsMap = new ConcurrentHashMap<>();
+        accountLocks = new ConcurrentHashMap<>();
+        maxAccountId.set(0);
+    }
+
     @VisibleForTesting
     void lockById(long accountId, long timeoutMilliseconds) throws DataAccessException {
         Semaphore semaphore = accountLocks.get(accountId);
