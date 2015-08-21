@@ -2,6 +2,7 @@ package com.revolut.interview.model;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.revolut.interview.utils.Assert;
 
 import java.util.Currency;
 
@@ -23,6 +24,10 @@ public class Transaction {
 
     public Transaction(long id, long sourceId, long destinationId, Amount amount,
                        TransactionStatus status) {
+        Assert.checkIsTrue(sourceId > 0, "sourceId cannot be zero or negative");
+        Assert.checkIsTrue(destinationId > 0, "destinationId cannot be zero or negative");
+        Assert.checkIsTrue(id >= 0, "destinationId cannot be zero or negative");
+        Assert.checkNotNull(amount, "amount cannot be null");
         this.id = id;
         this.sourceId = sourceId;
         this.destinationId = destinationId;

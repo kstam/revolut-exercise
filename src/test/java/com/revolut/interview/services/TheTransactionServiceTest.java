@@ -290,5 +290,4 @@ public class TheTransactionServiceTest {
         verify(accountRepo).unlockById(account1.getId());
         verify(accountRepo).unlockById(account2.getId());
     }
-
 }
